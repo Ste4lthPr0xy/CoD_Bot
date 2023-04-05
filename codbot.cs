@@ -10,6 +10,7 @@ using Microsoft.VisualBasic.Devices;
 using FiestaAnalytics.src.keyboard;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+using System.Reflection;
 
 namespace CoD_Bot
 {
@@ -19,8 +20,7 @@ namespace CoD_Bot
         {
             Image<Bgr, byte>? marchImage = null;
 
-            string folderPath = @"C:\Temp\CoD\";
-            List<Image<Bgr, byte>> imagesList = GetAllEmguImagesFromFolder(folderPath, out marchImage);
+            List<Image<Bgr, byte>> imagesList = GetAllEmguImagesFromResources(out marchImage);
 
 
 
@@ -43,6 +43,7 @@ namespace CoD_Bot
                 Thread.Sleep(3000);
                 if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.C)
                 {
+                    Console.WriteLine("Stopping the Bot");
                     break;
                 }
                 // Bildschirm als Bitmap aufnehmen
@@ -97,21 +98,23 @@ namespace CoD_Bot
                 }
             }
         }
-        public static List<Emgu.CV.Image<Emgu.CV.Structure.Bgr, byte>> GetAllEmguImagesFromFolder(string folderPath, out Image<Bgr, byte>? marchImage)
+        public static List<Emgu.CV.Image<Emgu.CV.Structure.Bgr, byte>> GetAllEmguImagesFromResources(out Image<Bgr, byte>? marchImage)
         {
             marchImage = null;
             List<Emgu.CV.Image<Emgu.CV.Structure.Bgr, byte>> imagesList = new List<Emgu.CV.Image<Emgu.CV.Structure.Bgr, byte>>();
-            string[] files = Directory.GetFiles(folderPath);
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string[] resourceNames = assembly.GetManifestResourceNames();
 
-            foreach (string file in files)
+            foreach (string resourceName in resourceNames)
             {
-                if (IsImage(file))
+                if (resourceName.StartsWith("CoD_Bot.Images.Windowed.") && IsImage(resourceName))
                 {
-                    using (Bitmap bitmap = new Bitmap(file))
+                    using (Stream stream = assembly.GetManifestResourceStream(resourceName))
                     {
+                        Bitmap bitmap = new Bitmap(stream);
                         Emgu.CV.Image<Emgu.CV.Structure.Bgr, byte> emguImage = bitmap.ToImage<Bgr, byte>();
                         imagesList.Add(emguImage);
-                        if (file.Contains("March"))
+                        if (resourceName.Contains("March"))
                         {
                             marchImage = emguImage;
                         }
@@ -122,21 +125,14 @@ namespace CoD_Bot
             return imagesList;
         }
 
-
-        public static bool IsImage(string filePath)
+        private static bool IsImage(string fileName)
         {
-            string extension = Path.GetExtension(filePath);
-
-            switch (extension.ToLower())
-            {
-                case ".jpg":
-                case ".jpeg":
-                case ".png":
-                case ".bmp":
-                    return true;
-                default:
-                    return false;
-            }
+            string extension = Path.GetExtension(fileName);
+            return extension.Equals(".bmp", StringComparison.InvariantCultureIgnoreCase)
+                || extension.Equals(".jpg", StringComparison.InvariantCultureIgnoreCase)
+                || extension.Equals(".jpeg", StringComparison.InvariantCultureIgnoreCase)
+                || extension.Equals(".png", StringComparison.InvariantCultureIgnoreCase)
+                || extension.Equals(".gif", StringComparison.InvariantCultureIgnoreCase);
         }
 
         public static class MouseOperations

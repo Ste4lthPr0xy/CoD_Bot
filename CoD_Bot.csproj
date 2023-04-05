@@ -9,10 +9,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\Windowed\WExplore.png" />
+    <None Remove="Images\Windowed\WExplore2.png" />
+    <None Remove="Images\Windowed\WMarch.png" />
+    <None Remove="Images\Windowed\WScoutCamp.png" />
+    <None Remove="Images\Windowed\WSearchIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Images\Windowed\WExplore.png" />
+    <EmbeddedResource Include="Images\Windowed\WExplore2.png" />
+    <EmbeddedResource Include="Images\Windowed\WMarch.png" />
+    <EmbeddedResource Include="Images\Windowed\WScoutCamp.png" />
+    <EmbeddedResource Include="Images\Windowed\WSearchIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Emgu.CV" Version="4.6.0.5131" />
     <PackageReference Include="Emgu.CV.Bitmap" Version="4.6.0.5131" />
     <PackageReference Include="Emgu.CV.runtime.windows" Version="4.6.0.5131" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Images\Fullscreen\" />
   </ItemGroup>
 
 </Project>
